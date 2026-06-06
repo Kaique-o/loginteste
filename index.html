@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://esm.sh; connect-src 'self' https://xneybhdmfakpvhfjczkz.supabase.co https://*.supabase.co; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'">
+  <title>Login</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style id="inline_css_fallback">
+:root {
+  /*
+    paleta final solicitada:
+    #D9D9D9 = primaria
+    #020029 = secundaria
+    #000000 = texto sobre primaria
+    #FFFFFF = texto sobre secundaria
+    #FAECD6 = micro detalhes de animacoes
+
+    fontes solicitadas:
+    - principal: LegacySansITCPro-Book
+    - secundaria: Sirius
+
+    obs: os nomes abaixo ja ficam aplicados. se essas fontes nao estiverem instaladas no dispositivo,
+    o navegador usa os fallbacks seguros. para carregar 100% igual em qualquer maquina, coloque os
+    arquivos licenciados em assets/fonts e adicione @font-face apontando para eles.
+  */
+  --primary-color: #D9D9D9;
+  --secondary-color: #020029;
+  --text-on-primary: #000000;
+  --text-on-secondary: #FFFFFF;
+  --animation-detail: #FAECD6;
+
+  --bg: var(--primary-color);
+  --surface: rgba(217, 217, 217, 0.92);
+  --surface-strong: var(--primary-color);
+  --surface-secondary: var(--secondary-color);
+  --text: var(--text-on-primary);
+  --text-inverted: var(--text-on-secondary);
+  --muted: rgba(0, 0, 0, 0.66);
+  --border: rgba(2, 0, 41, 0.2);
+  --border-strong: rgba(2, 0, 41, 0.42);
+  --secondary-soft: rgba(2, 0, 41, 0.08);
+  --detail-soft: rgba(250, 236, 214, 0.72);
+  --shadow: 0 24px 70px rgba(2, 0, 41, 0.16);
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+  --focus: 0 0 0 4px rgba(250, 236, 214, 0.86), 0 0 0 7px rgba(2, 0, 41, 0.18);
+  --font-primary: "LegacySansITCPro-Book", "Legacy Sans ITC Pro", "Legacy Sans", Arial, sans-serif;
+  --font-secondary: "Sirius", "LegacySansITCPro-Book", "Legacy Sans ITC Pro", Arial, sans-serif;
+  font-family: var(--font-primary);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(250, 236, 214, 0.54), transparent 13rem),
+    radial-gradient(circle at 92% 92%, rgba(2, 0, 41, 0.09), transparent 18rem),
+    var(--bg);
+  font-family: var(--font-primary);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.auth-page {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.auth-shell {
+  width: min(440px, 100%);
+}
+
+.auth-card,
+.home-card,
+.auth-gate {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+}
+
+.auth-card::before,
+.home-card::before,
+.auth-gate::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 96px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--animation-detail);
+  opacity: 0.95;
+}
+
+.auth-card {
+  border-radius: var(--radius-lg);
+  padding: clamp(24px, 6vw, 40px);
+  animation: cardIn 0.45s ease both;
+}
+
+.card-header {
+  margin-bottom: 24px;
+}
+
+.card-header h1,
+.home-card h1 {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-secondary);
+  font-size: clamp(34px, 9vw, 54px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.login-box {
+  display: grid;
+  gap: 14px;
+}
+
+label {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+input {
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
+  color: var(--text-on-primary);
+  background: var(--primary-color);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+input::placeholder {
+  color: rgba(0, 0, 0, 0.46);
+}
+
+input:focus {
+  border-color: var(--secondary-color);
+  box-shadow: var(--focus);
+  background: var(--primary-color);
+}
+
+input[aria-invalid="true"] {
+  border-color: var(--secondary-color);
+  background:
+    linear-gradient(90deg, rgba(250, 236, 214, 0.72), transparent 34%),
+    var(--primary-color);
+}
+
+.primary-button,
+.ghost-button,
+.link-button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-weight: 850;
+}
+
+.primary-button {
+  min-height: 54px;
+  margin-top: 8px;
+  color: var(--text-on-secondary);
+  background: var(--secondary-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.primary-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(2, 0, 41, 0.24), 0 0 0 3px rgba(250, 236, 214, 0.5);
+  background: var(--secondary-color);
+}
+
+.link-button {
+  padding: 0;
+  color: var(--secondary-color);
+  background: transparent;
+  font-size: 13px;
+}
+
+.ghost-button {
+  min-height: 44px;
+  padding: 0 18px;
+  color: var(--text-on-secondary);
+  background: var(--secondary-color);
+  border: 1px solid var(--border-strong);
+}
+
+.alert {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px 12px 18px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.alert::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--animation-detail);
+}
+
+.alert-error,
+.alert-warning,
+.alert-success {
+  color: var(--text-on-secondary);
+  background: var(--secondary-color);
+  border: 1px solid var(--secondary-color);
+}
+
+.alert.is-entering {
+  animation: alertIn 0.28s ease both;
+}
+
+.login-box.is-error {
+  animation: shake 0.38s ease both;
+}
+
+.login-box.is-success {
+  animation: successLift 0.5s ease both;
+}
+
+.login-box.is-loading {
+  pointer-events: none;
+}
+
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 20;
+}
+
+.confetti-layer span {
+  position: absolute;
+  top: -12px;
+  left: var(--x);
+  width: 8px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--animation-detail);
+  box-shadow: 0 0 0 1px rgba(2, 0, 41, 0.18);
+  animation: confettiFall 1.2s ease-in var(--delay) forwards;
+}
+
+.app-page {
+  padding: 18px;
+}
+
+.auth-gate {
+  position: fixed;
+  inset: 18px;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-lg);
+}
+
+.gate-loader {
+  width: 38px;
+  height: 38px;
+  margin: 0 auto 18px;
+  border: 4px solid rgba(2, 0, 41, 0.16);
+  border-top-color: var(--animation-detail);
+  border-right-color: var(--secondary-color);
+  border-radius: 999px;
+  animation: spin 0.8s linear infinite;
+}
+
+.auth-gate.is-denied {
+  animation: shake 0.38s ease both;
+}
+
+.protected-shell.is-locked {
+  display: none;
+}
+
+.protected-shell.is-unlocked {
+  display: block;
+  animation: pageIn 0.35s ease both;
+}
+
+.app-header {
+  position: sticky;
+  top: 18px;
+  z-index: 10;
+  width: min(980px, 100%);
+  min-height: 66px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 22px;
+  color: var(--text-on-secondary);
+  background: var(--secondary-color);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 16px 40px rgba(2, 0, 41, 0.12);
+}
+
+.app-logo {
+  color: var(--text-on-secondary);
+  font-family: var(--font-secondary);
+  font-size: 15px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.app-main {
+  width: min(980px, 100%);
+  margin: 0 auto;
+}
+
+.home-alert {
+  margin-bottom: 14px;
+}
+
+.home-card {
+  min-height: 320px;
+  display: grid;
+  align-content: center;
+  gap: 16px;
+  border-radius: var(--radius-lg);
+  padding: clamp(24px, 6vw, 52px);
+}
+
+.home-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes alertIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+@keyframes successLift {
+  0% { transform: scale(1); box-shadow: none; }
+  45% { transform: scale(1.018); box-shadow: 0 0 0 5px rgba(250, 236, 214, 0.78); }
+  100% { transform: scale(1); box-shadow: none; }
+}
+
+@keyframes approvePop {
+  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(250, 236, 214, 0.88); }
+  55% { transform: scale(1.04); box-shadow: 0 0 0 12px rgba(250, 236, 214, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(250, 236, 214, 0); }
+}
+
+@keyframes confettiFall {
+  0% { opacity: 0; transform: translateY(-20px) rotate(var(--rotate)); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(105vh) rotate(calc(var(--rotate) + 240deg)); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .auth-page,
+  .app-page {
+    padding: 12px;
+  }
+
+  .auth-card,
+  .home-card,
+  .auth-gate {
+    border-radius: 22px;
+  }
+
+  .app-header {
+    top: 12px;
+    min-height: 62px;
+    border-radius: 20px;
+  }
+}
+
+</style>
+</head>
+<body class="auth-page">
+  <main class="auth-shell" aria-label="login">
+    <section class="auth-card" aria-label="formulario de login">
+      <div class="card-header">
+        <h1>entrar</h1>
+      </div>
+
+      <div id="config_alert" class="alert alert-warning hidden" role="alert"></div>
+      <div id="login_alert" class="alert hidden" role="alert" aria-live="polite"></div>
+
+      <div id="login_form" class="login-box" role="form" aria-label="login">
+        <label for="email">email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="seu@email.com"
+          autocomplete="username"
+          inputmode="email"
+          required
+        >
+
+        <div class="label-row">
+          <label for="senha">senha</label>
+          <button id="toggle_password" class="link-button" type="button" aria-controls="senha" aria-pressed="false">
+            mostrar
+          </button>
+        </div>
+        <input
+          id="senha"
+          name="senha"
+          type="password"
+          placeholder="sua senha"
+          autocomplete="current-password"
+          minlength="6"
+          required
+        >
+
+        <button id="login_button" class="primary-button" type="button">
+          entrar
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/config.js" defer></script>
+  <script src="assets/js/app_helpers.js" defer></script>
+  <script src="assets/js/supabase_runtime.js" defer></script>
+  <script src="assets/js/login.js" defer></script>
+</body>
+</html>
